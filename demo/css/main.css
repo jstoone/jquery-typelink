@@ -1,0 +1,13 @@
+body {
+  background: #fcfcfc;
+  font-size: 30px;
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: bold; }
+
+#content {
+  width: 75%;
+  margin: 50px auto; }
+
+.highlight {
+  text-decoration: underline;
+  cursor: pointer; }
