@@ -1,0 +1,4 @@
+# Project ignores
+.idea
+.DS_Store
+.codekit-cache
