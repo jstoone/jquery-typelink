@@ -121,18 +121,24 @@
 			// Check if a space has been hit
 			// TODO: Extract space charecter to member var as this.delimiter
 			if (currentCharecter == " ") {
-				_this.wordIndex++;
 
-				// Handle words
-				// TODO: Extact these variables to method
-				if (_this.currentPage.links.word + 1 == _this.wordIndex) {
-					if (_this.currentPage.links.word <= 1) {
-						_this.wrapWord(true);
-					} else {
-						_this.wrapWord(false);
-						_this.charIndex--;
+				for(var i = 0; i < _this.currentPage.links.length; i++)
+				{
+					var thisLink = _this.currentPage.links[i];
+
+					// TODO: Extact these variables to method
+					if (thisLink.word == _this.wordIndex - i) {
+						if (thisLink.word <= 1) {
+							_this.wrapWord(true);
+						} else {
+							_this.wrapWord(false);
+							_this.charIndex--;
+						}
 					}
 				}
+
+
+				_this.wordIndex++;
 
 				_this.currentWordLength = 0;
 			}
@@ -157,7 +163,7 @@
 			var preText = printedText.substring(0, startOfWord);
 
 
-			this.$element.text(preText).append(wrappedWord);
+			this.$element.html(preText).append(wrappedWord);
 		},
 
 		stopTyping: function () {
