@@ -11,17 +11,6 @@
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0
 		},
-	"\/demo\/apple-touch-icon-precomposed.png": {
-		"fileType": 32768,
-		"ignore": 0,
-		"ignoreWasSetByUser": 0,
-		"initialSize": 1226,
-		"inputAbbreviatedPath": "\/demo\/apple-touch-icon-precomposed.png",
-		"outputAbbreviatedPath": "\/demo\/apple-touch-icon-precomposed.png",
-		"outputPathIsOutsideProject": 0,
-		"outputPathIsSetByUser": 0,
-		"processed": 0
-		},
 	"\/demo\/css\/main.css": {
 		"fileType": 16,
 		"ignore": 1,
@@ -88,17 +77,6 @@
 		"ignoreWasSetByUser": 0,
 		"inputAbbreviatedPath": "\/demo\/js\/min\/typelinker.jquery-min.js",
 		"outputAbbreviatedPath": "\/demo\/js\/min\/dist\/typelinker.jquery-min.min.js",
-		"outputPathIsOutsideProject": 0,
-		"outputPathIsSetByUser": 0,
-		"outputStyle": 1,
-		"syntaxCheckerStyle": 0
-		},
-	"\/demo\/js\/typelink.jquery.js": {
-		"fileType": 64,
-		"ignore": 0,
-		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/demo\/js\/typelink.jquery.js",
-		"outputAbbreviatedPath": "\/demo\/js\/dist\/typelink.jquery.min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
@@ -949,7 +927,7 @@
 			}
 		},
 	"uglifyReservedNamesString": "$",
-	"websiteRelativeRoot": ""
+	"websiteRelativeRoot": "\/demo"
 	},
 "settingsFileVersion": "2"
 }
