@@ -128,7 +128,6 @@
 						currentLink.endCharecter,
 						currentLink.toText
 					)
-					console.log(_this.fullstring.indexOf());
 					_this.charIndex++;
 				}
 			}
