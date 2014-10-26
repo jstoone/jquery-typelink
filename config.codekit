@@ -29,11 +29,11 @@
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0
 		},
-	"\/demo\/index.php": {
+	"\/demo\/index.html": {
 		"fileType": 8192,
 		"ignore": 0,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/demo\/index.php",
+		"inputAbbreviatedPath": "\/demo\/index.html",
 		"outputAbbreviatedPath": "No Output Path",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0
@@ -927,7 +927,7 @@
 			}
 		},
 	"uglifyReservedNamesString": "$",
-	"websiteRelativeRoot": "\/demo"
+	"websiteRelativeRoot": "demo\/"
 	},
 "settingsFileVersion": "2"
 }
