@@ -44,15 +44,14 @@
 		this._name = pluginName;
 		this._animationInterval = $.noop();
 
-		this.wordIndex = 1;
-		this.charIndex = 1;
+		this.charIndex = 0;
+
 
 		this.currentWordLength = 0;
 		this.currentPage = this.settings.pages[this.settings.startPage];
 
 
 		this.fullstring = this.currentPage.text;
-		this.wordList = this.fullstring.split(" ");
 
 		_this = this;
 
@@ -72,6 +71,8 @@
 		 */
 		init: function () {
 			this.settings.$wrapper = this.buildWordWrap();
+
+			this.settings.$wrapper.css('white-space', 'pre');
 
 			this.createEvents();
 			this.animateText(this.settings.startPage);
@@ -113,38 +114,26 @@
 			_this.$element.append(currentCharecter);
 
 			// Check whether we have reached the end
-			// TODO: Extract string length to member var
 			if (_this.charIndex >= _this.fullstring.length) {
 				_this.stopTyping();
 			}
 
 			// Check if a space has been hit
-			// TODO: Extract space charecter to member var as this.delimiter
-			if (currentCharecter == " ") {
-
-				for(var i = 0; i < _this.currentPage.links.length; i++)
-				{
-					var thisLink = _this.currentPage.links[i];
-
-					// TODO: Extact these variables to method
-					if (thisLink.word == _this.wordIndex - i) {
-						if (thisLink.word <= 1) {
-							_this.wrapWord(true);
-						} else {
-							_this.wrapWord(false);
-							_this.charIndex--;
-						}
-					}
+			for(var i = 0; i < _this.currentPage.links.length; i++)
+			{
+				var currentLink = _this.currentPage.links[i];
+				if(currentLink.endCharecter == _this.charIndex) {
+					_this.wrapWord(
+						currentLink.startCharecter,
+						currentLink.endCharecter,
+						currentLink.toText
+					)
+					console.log(_this.fullstring.indexOf());
+					_this.charIndex++;
 				}
-
-
-				_this.wordIndex++;
-
-				_this.currentWordLength = 0;
 			}
 
 			_this.charIndex++;
-			_this.currentWordLength++;
 		},
 
 		/**
@@ -152,25 +141,20 @@
 		 *
 		 * @param isFirstWord
 		 */
-		wrapWord: function (isFirstWord) {
-			var printedText = this.$element.text();
-			var startOfWord = (this.charIndex - 1) - (this.currentWordLength - 1);
-			var endOfWord = printedText.length - 1;
+		wrapWord: function (start, end, toText) {
 
-			var word = printedText.substring(startOfWord, endOfWord);
-			var wrappedWord = this.settings.$wrapper.text(word);
-			wrappedWord.attr('data-page', this.currentPage.links.toText);
-			var preText = printedText.substring(0, startOfWord);
+			var wrapText = _this.fullstring.slice(start, end+1);
 
+			var currentText = this.$element.html();
+			var preTextLength = currentText.length;
+			var preText = currentText.slice(0, preTextLength-wrapText.length);
+			var wrappedText = this.settings.$wrapper.text(wrapText);
+			wrappedText.attr('data-page', toText);
 
-			this.$element.html(preText).append(wrappedWord);
+			this.$element.html(" "+preText+" ").append(wrappedText);
 		},
 
 		stopTyping: function () {
-			if (this.currentPage.links.word == this.wordList.length) {
-				this.wrapWord(false);
-			}
-
 			clearInterval(this._animationInterval);
 		},
 
@@ -180,11 +164,7 @@
 		 * @param pageId
 		 */
 		resetValues: function () {
-			this.wordIndex = 1;
-			this.charIndex = 1;
-
-			this.currentWordLength = 0;
-
+			this.charIndex = 0;
 
 			this.fullstring = this.currentPage.text;
 			this.wordList = this.fullstring.split(" ");
