@@ -151,7 +151,10 @@
 			var wrappedText = this.settings.$wrapper.text(wrapText);
 			wrappedText.attr('data-page', toText);
 
-			this.$element.html(" "+preText+" ").append(wrappedText);
+			if(start == 0)
+				preText = '';
+
+			this.$element.html(preText+" ").append(wrappedText);
 		},
 
 		stopTyping: function () {
