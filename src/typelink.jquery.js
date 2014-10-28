@@ -14,7 +14,7 @@
 // the semi-colon before function invocation is a safety net against concatenated
 // scripts and/or other plugins which may not be closed properly.
 ;
-(function ($, window, document, undefined) {
+(function ( $, window, document, undefined ) {
 
 	// Create the defaults once
 	var pluginName = "typelink",
@@ -22,8 +22,9 @@
 			pages: {},
 			startPage: 0,
 			textDelay: 50,
-			$wrapper: $('<span>'),
+			$wrapper: $( '<span>' ),
 			wrapperClass: "highlight",
+			externalClass: "highlight",
 			deleteDelay: 15
 		};
 
@@ -34,27 +35,20 @@
 	 * @param options
 	 * @constructor
 	 */
-	function Plugin($element, options) {
-		this.$element = $($element);
-		this.$document = $(document);
+	function Plugin( $element, options ) {
+		this.$element = $( $element );
+		this.$document = $( document );
 
-		this.settings = $.extend({}, defaults, options);
+		this.settings = $.extend( {}, defaults, options );
 
 		this._defaults = defaults;
 		this._name = pluginName;
 		this._animationInterval = $.noop();
 
 		this.charIndex = 0;
-
-
 		this.currentWordLength = 0;
 		this.currentPage = this.settings.pages[this.settings.startPage];
-
-
 		this.fullstring = this.currentPage.text;
-
-		_this = this;
-
 		this.backAnimation = {
 			text: '',
 			textLength: 0,
@@ -65,17 +59,18 @@
 	}
 
 	// Avoid Plugin.prototype conflicts
-	$.extend(Plugin.prototype, {
+	$.extend( Plugin.prototype, {
+
 		/**
 		 * Initialize the plugin
 		 */
 		init: function () {
 			this.settings.$wrapper = this.buildWordWrap();
 
-			this.settings.$wrapper.css('white-space', 'pre');
+			this.settings.$wrapper.css( 'white-space', 'pre' );
 
 			this.createEvents();
-			this.animateText(this.settings.startPage);
+			this.animateText( this.settings.startPage );
 		},
 
 		/**
@@ -84,7 +79,7 @@
 		 * @returns $element
 		 */
 		buildWordWrap: function () {
-			return this.settings.$wrapper.addClass(this.settings.wrapperClass);
+			return this.settings.$wrapper.addClass( this.settings.wrapperClass );
 		},
 
 		/**
@@ -92,47 +87,46 @@
 		 *
 		 * @param pageId
 		 */
-		animateText: function (currentPageId) {
+		animateText: function ( currentPageId ) {
 
 			this.currentPage = this.settings.pages[currentPageId];
 			this.fullstring = this.currentPage.text;
-			this.wordList = this.fullstring.split(" ");
+			this.wordList = this.fullstring.split( " " );
 
 			this._animationInterval = setInterval(
-				this.animationCycle,
+				$.proxy( this.animationCycle, this ),
 				this.settings.textDelay
 			);
 		},
 
 		animationCycle: function () {
-			var currentCharecter = _this.fullstring.substring(
-				_this.charIndex - 1,
-				_this.charIndex
+			var currentCharecter = this.fullstring.substring(
+				this.charIndex - 1,
+				this.charIndex
 			);
 
 			// Set the current text
-			_this.$element.append(currentCharecter);
+			this.$element.append( currentCharecter );
 
 			// Check whether we have reached the end
-			if (_this.charIndex >= _this.fullstring.length) {
-				_this.stopTyping();
+			if ( this.charIndex >= this.fullstring.length ) {
+				this.stopTyping();
 			}
 
 			// Check if a space has been hit
-			for(var i = 0; i < _this.currentPage.links.length; i++)
-			{
-				var currentLink = _this.currentPage.links[i];
-				if(currentLink.endCharecter == _this.charIndex) {
-					_this.wrapWord(
+			for ( var i = 0; i < this.currentPage.links.length; i++ ) {
+				var currentLink = this.currentPage.links[i];
+				if ( currentLink.endCharecter == this.charIndex ) {
+					this.wrapWord(
 						currentLink.startCharecter,
 						currentLink.endCharecter,
 						currentLink.toText
 					)
-					_this.charIndex++;
+					this.charIndex++;
 				}
 			}
 
-			_this.charIndex++;
+			this.charIndex++;
 		},
 
 		/**
@@ -140,24 +134,23 @@
 		 *
 		 * @param isFirstWord
 		 */
-		wrapWord: function (start, end, toText) {
-
-			var wrapText = _this.fullstring.slice(start, end+1);
+		wrapWord: function ( start, end, toText ) {
+			var wrapText = this.fullstring.slice( start, end + 1 );
 
 			var currentText = this.$element.html();
 			var preTextLength = currentText.length;
-			var preText = currentText.slice(0, preTextLength-wrapText.length);
-			var wrappedText = this.settings.$wrapper.text(wrapText);
-			wrappedText.attr('data-page', toText);
+			var preText = currentText.slice( 0, preTextLength - wrapText.length );
+			var wrappedText = this.settings.$wrapper.text( wrapText );
+			wrappedText.attr( 'data-page', toText );
 
-			if(start == 0)
+			if ( start == 0 )
 				preText = '';
 
-			this.$element.html(preText+" ").append(wrappedText);
+			this.$element.html( preText + " " ).append( wrappedText );
 		},
 
 		stopTyping: function () {
-			clearInterval(this._animationInterval);
+			clearInterval( this._animationInterval );
 		},
 
 		/**
@@ -169,74 +162,63 @@
 			this.charIndex = 0;
 
 			this.fullstring = this.currentPage.text;
-			this.wordList = this.fullstring.split(" ");
+			this.wordList = this.fullstring.split( " " );
 		},
 
 		createEvents: function () {
-			var wrapperClass = "."+this.settings.wrapperClass;
+			var wrapperClass = "." + this.settings.wrapperClass;
 			// passing the `this` scope as event data for future reference
-			this.$document.on('click', wrapperClass, this, this.shiftPage);
+			this.$document.on( 'click', wrapperClass, this, this.shiftPage );
 		},
 
-		shiftPage: function (event) {
+		shiftPage: function ( event ) {
 			var appScope = event.data;
-			var pageId = $(this).data('page');
+			var pageId = $( this ).data( 'page' );
 
-			clearInterval(appScope._animationInterval);
+			clearInterval( appScope._animationInterval );
 
-			appScope.textResetHideAnimation(function() {
-				appScope.animateText(pageId);
-			});
+			appScope.textResetHideAnimation( function () {
+				appScope.animateText( pageId );
+			} );
 
-			appScope.resetValues(pageId);
+			appScope.resetValues( pageId );
 		},
 
-		textResetHideAnimation: function (callback) {
-			var $parent = this.settings.$wrapper.parent();
+		textResetHideAnimation: function ( callback ) {
+			var $container = this.settings.$wrapper.parent();
+			$container.html( $container.text() );
 
-			// Convert current html to plain text
-			$parent.html($parent.text());
+			var fullText = $container.text();
+			var currentIndex = fullText.length;
 
-			var fullText = $parent.text();
+			this._animationInterval = setInterval( $.proxy( function () {
+				var newString = fullText.substring( 0, currentIndex );
 
-			var proxyObject = {
-				scope: this,
-				currentIndex: fullText.length,
-				fullText: fullText,
-				$element: $parent,
-				callback: callback
-			}
+				$container.text( newString );
 
-			this._animationInterval = setInterval($.proxy(function() {
-				var _this = proxyObject;
-				var newString = _this.fullText.substring(0, _this.currentIndex);
-
-				_this.$element.text(newString);
-
-				if(_this.currentIndex <= 0)
-				{
-					clearInterval(_this.scope._animationInterval);
-					_this.callback();
+				if ( currentIndex <= 0 ) {
+					clearInterval( this._animationInterval );
+					callback();
 				}
 
-				_this.currentIndex--;
+				currentIndex--;
 
-			}, proxyObject), this.settings.deleteDelay);
+			}, this ), this.settings.deleteDelay );
 		}
 
-	});
+	} );
 
 	// A really lightweight plugin wrapper around the constructor,
 	// preventing against multiple instantiations
-	$.fn[pluginName] = function (options) {
-		this.each(function () {
-			if (!$.data(this, "plugin_" + pluginName)) {
-				$.data(this, "plugin_" + pluginName, new Plugin(this, options));
+	$.fn[pluginName] = function ( options ) {
+		this.each( function () {
+			if ( !$.data( this, "plugin_" + pluginName ) ) {
+				$.data( this, "plugin_" + pluginName, new Plugin( this, options ) );
 			}
-		});
+		} );
 
 		// chain jQuery functions
 		return this;
 	};
 
-})(jQuery, window, document);
+})( jQuery, window, document );
