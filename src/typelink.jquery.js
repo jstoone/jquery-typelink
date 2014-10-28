@@ -45,15 +45,10 @@
 		this._name = pluginName;
 		this._animationInterval = $.noop();
 
-		this.charIndex = 0;
-		this.currentWordLength = 0;
-		this.currentPage = this.settings.pages[this.settings.startPage];
-		this.fullstring = this.currentPage.text;
-		this.backAnimation = {
-			text: '',
-			textLength: 0,
-			characterIndex: 0
-		};
+		this._charIndex = 0;
+		this._currentPage = this.settings.pages[this.settings.startPage];
+		this._fullstring = '';
+		this._fullstringLength = 0;
 
 		this.init();
 	}
@@ -66,7 +61,6 @@
 		 */
 		init: function () {
 			this.settings.$wrapper = this.buildWordWrap();
-
 			this.settings.$wrapper.css( 'white-space', 'pre' );
 
 			this.createEvents();
@@ -88,10 +82,9 @@
 		 * @param pageId
 		 */
 		animateText: function ( currentPageId ) {
-
-			this.currentPage = this.settings.pages[currentPageId];
-			this.fullstring = this.currentPage.text;
-			this.wordList = this.fullstring.split( " " );
+			this._currentPage = this.settings.pages[currentPageId];
+			this._fullstring = this._currentPage.text;
+			this._fullstringLength = this._fullstring.length;
 
 			this._animationInterval = setInterval(
 				$.proxy( this.animationCycle, this ),
@@ -103,33 +96,35 @@
 		 * The main animation loop
 		 */
 		animationCycle: function () {
-			var currentCharecter = this.fullstring.substring(
-				this.charIndex - 1,
-				this.charIndex
+			var currentCharecter = this._fullstring.substring(
+				this._charIndex - 1,
+				this._charIndex
 			);
 
-			// Set the current text
 			this.$element.append( currentCharecter );
 
 			// Check whether we have reached the end
-			if ( this.charIndex >= this.fullstring.length ) {
+			if ( this._charIndex >= this._fullstringLength ) {
 				this.stopTyping();
 			}
 
 			// Check if a space has been hit
-			for ( var i = 0; i < this.currentPage.links.length; i++ ) {
-				var currentLink = this.currentPage.links[i];
-				if ( currentLink.endCharecter == this.charIndex ) {
+			for ( var i = 0; i < this._currentPage.links.length; i++ ) {
+				var currentLink = this._currentPage.links[i];
+
+				if ( currentLink.endCharecter == this._charIndex ) {
 					this.wrapWord(
 						currentLink.startCharecter,
 						currentLink.endCharecter,
 						currentLink.toText
 					)
-					this.charIndex++;
-				}
+
+					this._charIndex++;
+			 	}
+
 			}
 
-			this.charIndex++;
+			this._charIndex++;
 		},
 
 		/**
@@ -138,12 +133,12 @@
 		 * @param isFirstWord
 		 */
 		wrapWord: function ( start, end, toText ) {
-			var wrapText = this.fullstring.slice( start, end + 1 );
+			var wrapText = this._fullstring.slice( start, end + 1 ),
+				currentHtml = this.$element.html(),
+				preTextLength = currentHtml.length,
+				preText = currentHtml.slice( 0, preTextLength - wrapText.length ),
+				wrappedText = this.settings.$wrapper.text( wrapText );
 
-			var currentText = this.$element.html();
-			var preTextLength = currentText.length;
-			var preText = currentText.slice( 0, preTextLength - wrapText.length );
-			var wrappedText = this.settings.$wrapper.text( wrapText );
 			wrappedText.attr( 'data-page', toText );
 
 			if ( start == 0 )
@@ -165,10 +160,10 @@
 		 * @param pageId
 		 */
 		resetValues: function () {
-			this.charIndex = 0;
+			this._charIndex = 0;
 
-			this.fullstring = this.currentPage.text;
-			this.wordList = this.fullstring.split( " " );
+			this._fullstring = this._currentPage.text;
+			this.wordList = this._fullstring.split( " " );
 		},
 
 		/**
