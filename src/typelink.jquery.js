@@ -1,13 +1,15 @@
 /*
  *  jQuery TypeLink
  *  A plugin created for people to animate text
- *  and use it as a navigation for their website
- *  -- No website --
+ *  and use it as a navigation for their website.
+ *  http://typelink.dev.jakobsteinn.com
  *
  *  Made by Jakob Steinn
- *  Based on jQuery Boilerplate:
+ *
+ *  Used jQuery Boilerplate:
  *      by Zeno Rocha
  *  http://jqueryboilerplate.com/
+ *
  *  Under MIT License
  */
 
@@ -25,6 +27,7 @@
 			$wrapper: $( '<span>' ),
 			wrapperClass: "highlight",
 			externalClass: "highlight",
+			externalTarget: '_blank',
 			deleteDelay: 15
 		};
 
@@ -49,6 +52,8 @@
 		this._currentPage = this.settings.pages[this.settings.startPage];
 		this._fullstring = '';
 		this._fullstringLength = 0;
+
+		this._externalWrapper = $('<a href="#" />');
 
 		this.init();
 	}
@@ -114,9 +119,7 @@
 
 				if ( currentLink.endCharecter == this._charIndex ) {
 					this.wrapWord(
-						currentLink.startCharecter,
-						currentLink.endCharecter,
-						currentLink.toText
+						currentLink
 					)
 
 					this._charIndex++;
@@ -132,14 +135,27 @@
 		 *
 		 * @param isFirstWord
 		 */
-		wrapWord: function ( start, end, toText ) {
+		wrapWord: function ( linkObj ) {
+			var start = linkObj.startCharecter,
+				end = linkObj.endCharecter;
 			var wrapText = this._fullstring.slice( start, end + 1 ),
 				currentHtml = this.$element.html(),
 				preTextLength = currentHtml.length,
 				preText = currentHtml.slice( 0, preTextLength - wrapText.length ),
-				wrappedText = this.settings.$wrapper.text( wrapText );
+				wrappedText = null;
 
-			wrappedText.attr( 'data-page', toText );
+			if( linkObj.toText != undefined ) {
+				wrappedText = this.settings.$wrapper.text( wrapText );
+				wrappedText.attr( 'data-page', linkObj.toText );
+			} else {
+				wrappedText = this._externalWrapper.text(wrapText);
+				wrappedText.addClass(this.settings.externalClass);
+				wrappedText.attr({
+					href: linkObj.link,
+					target: this.settings.externalTarget
+				});
+			}
+
 
 			if ( start == 0 )
 				preText = '';
@@ -171,8 +187,10 @@
 		 */
 		createEvents: function () {
 			var wrapperClass = "." + this.settings.wrapperClass;
+			var selection = wrapperClass + ":not('a')";
+
 			// passing the `this` scope as event data for future reference
-			this.$document.on( 'click', wrapperClass, this, this.changePage );
+			this.$document.on( 'click', selection, this, this.changePage );
 		},
 
 		/**
