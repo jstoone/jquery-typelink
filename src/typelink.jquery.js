@@ -177,7 +177,7 @@
 		createEvents: function () {
 			var wrapperClass = "." + this.settings.wrapperClass;
 			// passing the `this` scope as event data for future reference
-			this.$document.on( 'click', wrapperClass, this, this.shiftPage );
+			this.$document.on( 'click', wrapperClass, this, this.changePage );
 		},
 
 		/**
@@ -185,7 +185,7 @@
 		 *
 		 * @param event
 		 */
-		shiftPage: function ( event ) {
+		changePage: function ( event ) {
 			var appScope = event.data;
 			var pageId = $( this ).data( 'page' );
 
