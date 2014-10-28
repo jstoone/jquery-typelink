@@ -83,7 +83,7 @@
 		},
 
 		/**
-		 * Main animation loop
+		 * Initializes the text animation
 		 *
 		 * @param pageId
 		 */
@@ -99,6 +99,9 @@
 			);
 		},
 
+		/**
+		 * The main animation loop
+		 */
 		animationCycle: function () {
 			var currentCharecter = this.fullstring.substring(
 				this.charIndex - 1,
@@ -149,6 +152,9 @@
 			this.$element.html( preText + " " ).append( wrappedText );
 		},
 
+		/**
+		 * Clear interval when end has been reached
+		 */
 		stopTyping: function () {
 			clearInterval( this._animationInterval );
 		},
@@ -165,12 +171,20 @@
 			this.wordList = this.fullstring.split( " " );
 		},
 
+		/**
+		 * Create wrapper click events
+		 */
 		createEvents: function () {
 			var wrapperClass = "." + this.settings.wrapperClass;
 			// passing the `this` scope as event data for future reference
 			this.$document.on( 'click', wrapperClass, this, this.shiftPage );
 		},
 
+		/**
+		 * Change page to specified link
+		 *
+		 * @param event
+		 */
 		shiftPage: function ( event ) {
 			var appScope = event.data;
 			var pageId = $( this ).data( 'page' );
@@ -184,6 +198,11 @@
 			appScope.resetValues( pageId );
 		},
 
+		/**
+		 * Reset the text though animation
+		 *
+		 * @param callback
+		 */
 		textResetHideAnimation: function ( callback ) {
 			var $container = this.settings.$wrapper.parent();
 			$container.html( $container.text() );
