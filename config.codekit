@@ -82,17 +82,6 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 0
 		},
-	"\/demo\/js\/vendor\/jquery-1.10.2.min.js": {
-		"fileType": 64,
-		"ignore": 0,
-		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/demo\/js\/vendor\/jquery-1.10.2.min.js",
-		"outputAbbreviatedPath": "\/demo\/js\/vendor\/dist\/jquery-1.10.2.min.min.js",
-		"outputPathIsOutsideProject": 0,
-		"outputPathIsSetByUser": 0,
-		"outputStyle": 1,
-		"syntaxCheckerStyle": 0
-		},
 	"\/demo\/js\/vendor\/modernizr-2.6.2.min.js": {
 		"fileType": 64,
 		"ignore": 0,
@@ -151,6 +140,17 @@
 		"outputAbbreviatedPath": "\/dist\/typelink.jquery.min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 1,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
+	"\/vendor\/jquery-1.11.1.js": {
+		"fileType": 64,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/vendor\/jquery-1.11.1.js",
+		"outputAbbreviatedPath": "\/vendor\/dist\/jquery-1.11.1.min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 0
 		}
