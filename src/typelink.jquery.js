@@ -53,6 +53,13 @@
 		this._fullstring = '';
 		this._fullstringLength = 0;
 
+		this._stringWrapStart = 0;
+		this._linkIndex = this.settings.startPage;
+		this._stringTag = {
+			start: '[s]',
+			end: '[/s]'
+		}
+
 		this._externalWrapper = $('<a href="#" />');
 
 		this.init();
@@ -86,10 +93,9 @@
 		 *
 		 * @param pageId
 		 */
-		animateText: function ( currentPageId ) {
-			this._currentPage = this.settings.pages[currentPageId];
-			this._fullstring = this._currentPage.text;
-			this._fullstringLength = this._fullstring.length;
+		animateText: function ( pageId ) {
+
+			this.resetValues( pageId )
 
 			this._animationInterval = setInterval(
 				$.proxy( this.animationCycle, this ),
@@ -106,25 +112,25 @@
 				this._charIndex
 			);
 
-			this.$element.append( currentCharecter );
+			// detect start tag
+			var nextThree = this._fullstring.substring(this._charIndex -1, this._charIndex + 2);
+			var nextFour = this._fullstring.substring(this._charIndex -1, this._charIndex + 3);
+
+			if(nextThree.indexOf(this._stringTag.start) === 0) {
+				this._stringWrapStart = this._charIndex;
+				this._charIndex += 2;
+			}
+			else if(nextFour.indexOf(this._stringTag.end) === 0) {
+				this.wrapWord(this._stringWrapStart, this._charIndex);
+				this._charIndex += 3;
+			}
+			else {
+				this.$element.append( currentCharecter );
+			}
 
 			// Check whether we have reached the end
 			if ( this._charIndex >= this._fullstringLength ) {
 				this.stopTyping();
-			}
-
-			// Check if a space has been hit
-			for ( var i = 0; i < this._currentPage.links.length; i++ ) {
-				var currentLink = this._currentPage.links[i];
-
-				if ( currentLink.endCharecter == this._charIndex ) {
-					this.wrapWord(
-						currentLink
-					)
-
-					this._charIndex++;
-			 	}
-
 			}
 
 			this._charIndex++;
@@ -133,16 +139,19 @@
 		/**
 		 * Wrap selected word in custom tags
 		 *
-		 * @param isFirstWord
+		 * @param startCharacter
+		 * @param endCharacter
 		 */
-		wrapWord: function ( linkObj ) {
-			var start = linkObj.startCharecter,
-				end = linkObj.endCharecter;
-			var wrapText = this._fullstring.slice( start, end + 1 ),
+		wrapWord: function ( startCharacter, endCharacter ) {
+
+			var start = startCharacter,
+				end = endCharacter;
+			var wrapText = this._fullstring.slice( start + 2, end -1 ),
 				currentHtml = this.$element.html(),
 				preTextLength = currentHtml.length,
 				preText = currentHtml.slice( 0, preTextLength - wrapText.length ),
-				wrappedText = null;
+				wrappedText = null,
+				linkObj = this._currentPage.links[this._linkIndex];
 
 			if( linkObj.toText != undefined ) {
 				wrappedText = this.settings.$wrapper.text( wrapText );
@@ -161,6 +170,8 @@
 				preText = '';
 
 			this.$element.html( preText + " " ).append( wrappedText );
+
+			this._linkIndex++;
 		},
 
 		/**
@@ -175,11 +186,13 @@
 		 *
 		 * @param pageId
 		 */
-		resetValues: function () {
+		resetValues: function (currentPageId) {
 			this._charIndex = 0;
+			this._linkIndex = 0;
 
+			this._currentPage = this.settings.pages[currentPageId];
 			this._fullstring = this._currentPage.text;
-			this.wordList = this._fullstring.split( " " );
+			this._fullstringLength = this._fullstring.length;
 		},
 
 		/**
@@ -207,8 +220,6 @@
 			appScope.textResetHideAnimation( function () {
 				appScope.animateText( pageId );
 			} );
-
-			appScope.resetValues( pageId );
 		},
 
 		/**
