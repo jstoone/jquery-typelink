@@ -27,7 +27,7 @@
 			$wrapper: $( '<span>' ),
 			wrapperClass: "highlight",
 			externalClass: "highlight",
-			externalTarget: '_blank',
+			defaultLinkTarget: '_blank',
 			deleteDelay: 15
 		};
 
@@ -161,7 +161,7 @@
 				wrappedText.addClass(this.settings.externalClass);
 				wrappedText.attr({
 					href: linkObj.link,
-					target: this.settings.externalTarget
+					target: linkObj.target || this.settings.defaultLinkTarget
 				});
 			}
 
