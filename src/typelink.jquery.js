@@ -28,6 +28,7 @@
 			wrapperClass: "highlight",
 			externalClass: "highlight",
 			defaultLinkTarget: '_blank',
+			defaultInputType: 'text',
 			deleteDelay: 15
 		};
 
@@ -53,14 +54,28 @@
 		this._fullstring = '';
 		this._fullstringLength = 0;
 
-		this._stringWrapStart = 0;
-		this._linkIndex = this.settings.startPage;
+		this._tagTypes = {
+			LINK: 'link',
+			EXTERNAL: 'external',
+			INPUT: 'input'
+		}
+
 		this._stringTag = {
 			start: '[s]',
 			end: '[/s]'
 		}
+		this._inputTag = {
+			start: '[i]',
+			end: '[/i]'
+		}
+
+		this._tagWrapStart = 0;
+		this._linkIndex = 0;
+		this._inputIndex = 0;
+		this._tagType = this._tagTypes.LINK;
 
 		this._externalWrapper = $('<a href="#" />');
+		this._inputWrapper = $('<input />');
 
 		this.init();
 	}
@@ -117,11 +132,21 @@
 			var nextFour = this._fullstring.substring(this._charIndex -1, this._charIndex + 3);
 
 			if(nextThree.indexOf(this._stringTag.start) === 0) {
-				this._stringWrapStart = this._charIndex;
+				this._tagWrapStart = this._charIndex;
+				this._tagType = this._tagTypes.LINK;
 				this._charIndex += 2;
 			}
 			else if(nextFour.indexOf(this._stringTag.end) === 0) {
-				this.wrapWord(this._stringWrapStart, this._charIndex);
+				this.wrapWord(this._tagWrapStart, this._charIndex);
+				this._charIndex += 3;
+			}
+			else if(nextThree.indexOf(this._inputTag.start) === 0) {
+				this._tagWrapStart = this._charIndex;
+				this._tagType = this._tagTypes.INPUT;
+				this._charIndex += 2;
+			}
+			else if(nextFour.indexOf(this._inputTag.end) === 0) {
+				this.wrapWord(this._tagWrapStart, this._charIndex);
 				this._charIndex += 3;
 			}
 			else {
@@ -150,28 +175,42 @@
 				currentHtml = this.$element.html(),
 				preTextLength = currentHtml.length,
 				preText = currentHtml.slice( 0, preTextLength - wrapText.length ),
-				wrappedText = null,
-				linkObj = this._currentPage.links[this._linkIndex];
+				wrappedText = null;
 
-			if( linkObj.toText != undefined ) {
-				wrappedText = this.settings.$wrapper.text( wrapText );
-				wrappedText.attr( 'data-page', linkObj.toText );
-			} else {
-				wrappedText = this._externalWrapper.text(wrapText);
-				wrappedText.addClass(this.settings.externalClass);
-				wrappedText.attr({
-					href: linkObj.link,
-					target: linkObj.target || this.settings.defaultLinkTarget
-				});
+			if(this._tagType == this._tagTypes.LINK) {
+				var linkObj = this._currentPage.links[this._linkIndex];
+
+				if( linkObj.toText != undefined ) {
+					wrappedText = this.settings.$wrapper.text( wrapText );
+					wrappedText.attr( 'data-page', linkObj.toText );
+				} else {
+					wrappedText = this._externalWrapper.text(wrapText);
+					wrappedText.addClass(this.settings.externalClass);
+					wrappedText.attr({
+						href: linkObj.link,
+						target: linkObj.target || this.settings.defaultLinkTarget
+					});
+				}
+
+				this._linkIndex++;
+
 			}
+			else if(this._tagType == this._tagTypes.INPUT) {
+				var inputObj = this._currentPage.inputs[this._inputIndex];
+				wrappedText = this._inputWrapper;
+				wrappedText.attr({
+					placeholder: wrapText,
+					type: inputObj.type || this.settings.defaultInputType
+				});
 
+				this._inputIndex++;
+			}
 
 			if ( start == 0 )
 				preText = '';
 
 			this.$element.html( preText + " " ).append( wrappedText );
 
-			this._linkIndex++;
 		},
 
 		/**
@@ -189,6 +228,7 @@
 		resetValues: function (currentPageId) {
 			this._charIndex = 0;
 			this._linkIndex = 0;
+			this._inputIndex = 0;
 
 			this._currentPage = this.settings.pages[currentPageId];
 			this._fullstring = this._currentPage.text;
