@@ -200,7 +200,8 @@
 				wrappedText = this._inputWrapper;
 				wrappedText.attr({
 					placeholder: wrapText,
-					type: inputObj.type || this.settings.defaultInputType
+					type: inputObj.type || this.settings.defaultInputType,
+					name: inputObj.name || wrapText.replace(' ', '_')
 				});
 
 				this._inputIndex++;
