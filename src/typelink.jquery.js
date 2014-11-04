@@ -175,16 +175,19 @@
 				currentHtml = this.$element.html(),
 				preTextLength = currentHtml.length,
 				preText = currentHtml.slice( 0, preTextLength - wrapText.length ),
-				wrappedText = null;
+				wrappedText = this.settings.$wrapper.clone(),
+				extraClass = '';
 
 			if(this._tagType == this._tagTypes.LINK) {
 				var linkObj = this._currentPage.links[this._linkIndex];
 
+				extraClass = linkObj.extraClass || '';
+
 				if( linkObj.toText != undefined ) {
-					wrappedText = this.settings.$wrapper.text( wrapText );
+					wrappedText = wrappedText.text( wrapText );
 					wrappedText.attr( 'data-page', linkObj.toText );
 				} else {
-					wrappedText = this._externalWrapper.text(wrapText);
+					wrappedText = this._externalWrapper.clone().text(wrapText);
 					wrappedText.addClass(this.settings.externalClass);
 					wrappedText.attr({
 						href: linkObj.link,
@@ -210,7 +213,7 @@
 			if ( start == 0 )
 				preText = '';
 
-			this.$element.html( preText + " " ).append( wrappedText );
+			this.$element.html( preText + " " ).append( wrappedText.addClass(extraClass) );
 
 		},
 
